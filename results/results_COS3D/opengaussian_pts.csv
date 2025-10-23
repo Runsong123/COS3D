@@ -1,0 +1,6 @@
+scene_name, mIoU, Acc@0.25, Acc@0.5
+figurines, 59.71, 82.14, 62.50
+teatime, 66.74, 91.53, 79.66
+ramen, 32.56, 45.07, 30.99
+waldo_kitchen, 41.02, 72.73, 36.36
+Average, 50.01, 72.87, 52.38
