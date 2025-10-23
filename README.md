@@ -6,7 +6,7 @@ This is the official PyTorch implementation of the following publication:
 > Runsong Zhu, Ka-Hei Hui, Zhengzhe Liu, Qianyi Wu, Weiliang Tang, Shi Qiu, 
 Pheng-Ann Heng, Chi-Wing Fu.<br/>
 > *NeurIPS 2025*<br/>
-> [**Full Paper**](assert/paper.pdf) |
+> [**Full Paper**](assets/paper.pdf) |
 
 ## Introduction
 
