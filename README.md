@@ -112,4 +112,4 @@ coming soon.
 ```
 
 ## Related Projects
-Some code snippets are borrowed from [OpenGaussian](https://github.com/yanmin-wu/OpenGaussian), [Langsplat](https://github.com/minghanqin/LangSplat), [Unified-Lift](https://github.com/Runsong123/Unified-Lift), [GAGS](https://github.com/WHU-USI3DV/GAGS). We thank the authors for releasing their code. 
+Some code snippets are borrowed from [OpenGaussian](https://github.com/yanmin-wu/OpenGaussian), [Langsplat](https://github.com/minghanqin/LangSplat), [GAGS](https://github.com/WHU-USI3DV/GAGS), [Unified-Lift](https://github.com/Runsong123/Unified-Lift). We thank the authors for releasing their code. 
