@@ -107,7 +107,12 @@ This repository is still under construction. Please feel free to open issues or 
 ## Citation
 
 ```
-coming soon.
+@article{zhu2025cos3d,
+  title={COS3D: Collaborative Open-Vocabulary 3D Segmentation},
+  author={Zhu, Runsong and Hui, Ka-Hei and Liu, Zhengzhe and Wu, Qianyi and Tang, Weiliang and Qiu, Shi and Heng, Pheng-Ann and Fu, Chi-Wing},
+  journal={arXiv preprint arXiv:2510.20238},
+  year={2025}
+}
 
 ```
 
