@@ -9,7 +9,8 @@ mkdir output
 for index in "${!scenes[@]}"; do
 
     adjusted_index=$((index))
-    adjusted_ip=$((index+6200))    
+    adjusted_ip=$((index+6200))   
+    echo "python train_instance.py -s ../OpenGaussian_v1/data/${scenes[$index]}/  -m output/${scenes[$index]}_again  --original_model_path ../gaussian-splatting/output/${scenes[$index]}_eval  --feature_mode --SAM_level 3  --port ${adjusted_ip} --eval "
     CUDA_VISIBLE_DEVICES=$adjusted_index  python train_instance.py -s ../OpenGaussian_v1/data/${scenes[$index]}/  -m output/${scenes[$index]}_again  --original_model_path ../gaussian-splatting/output/${scenes[$index]}_eval  --feature_mode --SAM_level 3  --port ${adjusted_ip} --eval 
 
 done

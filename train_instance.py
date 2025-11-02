@@ -12,7 +12,7 @@
 import os
 import torch
 from random import randint
-from utils.loss_utils import l1_loss, l1_loss_map, Scale_balance_loss, scale_regulation_loss, scale_region_regulation_loss, get_trained_seg
+from utils.loss_utils import l1_loss, l1_loss_map, get_trained_seg
 from gaussian_renderer import render, network_gui
 import sys
 from scene import Scene, GaussianModel
@@ -29,9 +29,6 @@ except ImportError:
     TENSORBOARD_FOUND = False
 
 import torch.nn.functional as F
-from scene.dataset_readers import read_sam_clip_feature
-from segment_anything import sam_model_registry
-from preprocess import OpenCLIPNetworkConfig, OpenCLIPNetwork
 
 import numpy as np
 from sklearn.decomposition import PCA
@@ -187,7 +184,7 @@ def feature_to_rgb(features):
 
 
 
-def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoint_iterations, checkpoint, debug_from,  render_novel_view_iteration, novel_view_interval, feature_mode, SAM_level, GS_original_path):
+def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoint_iterations, checkpoint, debug_from, feature_mode, SAM_level, GS_original_path):
     device0='cuda'
     device1='cpu'
         
@@ -258,7 +255,7 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
                 custom_cam, do_training, pipe.convert_SHs_python, pipe.compute_cov3D_python, keep_alive, scaling_modifer = network_gui.receive()
                 if custom_cam != None:
                     net_image = render(custom_cam, gaussians, pipe, background, scaling_modifer)["render"]
-                    net_image_bytes = memoryview((torch.clamp(net_image, min=0, max=1.0) * 255).byte().permute(1, 2, 0).contiguous().cpu().numpy()) #将net_image处理并通过memoryview提供一个直接访问这些数据的接口 clamp()将net_image的值截断至[0,1]
+                    net_image_bytes = memoryview((torch.clamp(net_image, min=0, max=1.0) * 255).byte().permute(1, 2, 0).contiguous().cpu().numpy()) #
                 network_gui.send(net_image_bytes, dataset.source_path)
                 if do_training and ((iteration < int(opt.iterations)) or not keep_alive):
                     break
@@ -379,16 +376,13 @@ def prepare_output_and_logger(args):
         print("Tensorboard not available: not logging progress")
     return tb_writer
 
-def training_report(tb_writer, iteration, Ll1_feature, feature_reionvar_loss, scale_s, sclae_m, scale_l, loss, l1_loss, elapsed, testing_iterations, scene : Scene, renderFunc, renderArgs):
+def training_report(tb_writer, iteration, Ll1_feature, feature_loss,  loss, l1_loss, elapsed, testing_iterations, scene : Scene, renderFunc, renderArgs):
     if tb_writer:
         # tb_writer.add_scalar('train_loss_patches/l1_loss', Ll1.item(), iteration)
         tb_writer.add_scalar('train_loss_patches/l1_loss_feature', Ll1_feature.item(), iteration) 
         tb_writer.add_scalar('train_loss_patches/total_loss', loss.item(), iteration)
-        tb_writer.add_scalar('train_loss_patches/feature_reionvar_loss', feature_reionvar_loss.item(), iteration)
+        tb_writer.add_scalar('train_loss_patches/feature_loss', feature_loss.item(), iteration)
         tb_writer.add_scalar('iter_time', elapsed, iteration)
-        tb_writer.add_scalar('scale_patchs/subpart',scale_s.item(), iteration)
-        tb_writer.add_scalar('scale_patchs/part',sclae_m.item(), iteration)
-        tb_writer.add_scalar('scale_patchs/whole',scale_l.item(), iteration)
 
 if __name__ == "__main__":
     # Set up command line argument parser
@@ -406,11 +400,8 @@ if __name__ == "__main__":
     parser.add_argument("--quiet", action="store_true")
     parser.add_argument("--checkpoint_iterations", nargs="+", type=int, default=[100, 6000, 15_000, 30_000])
     parser.add_argument("--start_checkpoint", type=str, default = None)
-    parser.add_argument('--render_novel_view_iteration',type=int, default=99999)
-    parser.add_argument('--novel_view_interval',type=int,default=150)
     parser.add_argument('--feature_mode', action='store_true', help='use feature replace RGB')
     parser.add_argument('--sam_ckpt_path', type=str, default="ckpts/sam_vit_h_4b8939.pth")
-    parser.add_argument("--novel_view", action='store_true')
     args = parser.parse_args(sys.argv[1:]) 
     args.save_iterations.append(args.iterations)
 
@@ -422,18 +413,12 @@ if __name__ == "__main__":
     scene_name = args.source_path.split("/")[-1]
     if scene_name == "":
         scene_name = args.source_path.split("/")[-2]
-    # print("Scene name: ", scene_name)
+    # 
     # exit()
 
     GS_original_path = f"/research/d1/gds/rszhu22/Gaussian_vocabulary/gaussian-splatting/output/{scene_name}_eval/"
 
-    # Initialize SAM & CLIP model
-    if args.novel_view:
-        CLIP_model = OpenCLIPNetwork(OpenCLIPNetworkConfig)
-        sam = sam_model_registry["vit_h"](checkpoint=args.sam_ckpt_path).to('cuda')
-    else:
-        CLIP_model = None
-        sam = None
+
         
     # empty cache
     torch.cuda.empty_cache()
@@ -442,6 +427,6 @@ if __name__ == "__main__":
     torch.autograd.set_detect_anomaly(args.detect_anomaly)
     training(lp.extract(args), op.extract(args), pp.extract(args), 
              args.test_iterations, args.save_iterations, args.checkpoint_iterations, args.start_checkpoint, 
-             args.debug_from, args.render_novel_view_iteration,args.novel_view_interval,args.feature_mode, args.SAM_level, GS_original_path)
+             args.debug_from,args.feature_mode, args.SAM_level, GS_original_path)
     # All done
     print("\nTraining complete.")
