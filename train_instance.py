@@ -185,16 +185,6 @@ def feature_to_rgb(features):
     rgb_array = pca_normalized.astype('uint8')
     return rgb_array
 
-def create_scale_map(single_scale, feature_map_shape):
-    scale_values = {
-        "s": [1, 0, 0],
-        "m": [0, 1, 0],
-        "l": [0, 0, 1],
-        "mix": [1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0]
-    }
-    assert single_scale in scale_values, "Invalid scale value"
-    scale_map = torch.tensor(scale_values[single_scale], dtype=torch.float32, device='cuda')
-    return scale_map.unsqueeze(-1).unsqueeze(-1).repeat(1, feature_map_shape[1], feature_map_shape[2])
 
 
 def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoint_iterations, checkpoint, debug_from, scale_balance_iteration, scale_regulation_iteration, render_novel_view_iteration, novel_view_interval, feature_mode, single_scale, SAM_level, GS_original_path):
