@@ -411,7 +411,6 @@ if __name__ == "__main__":
     parser.add_argument('--feature_mode', action='store_true', help='use feature replace RGB')
     parser.add_argument('--sam_ckpt_path', type=str, default="ckpts/sam_vit_h_4b8939.pth")
     parser.add_argument("--novel_view", action='store_true')
-    parser.add_argument("--single_scale",type=str, choices=['s', 'm', 'l', 'mix'], default = None) # s | m | l
     args = parser.parse_args(sys.argv[1:]) 
     args.save_iterations.append(args.iterations)
 
