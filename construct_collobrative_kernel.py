@@ -25,7 +25,6 @@ import sklearn.decomposition
 import numpy as np
 from PIL import Image
 import torch.nn as nn
-from scene.dataset_readers import read_sam_clip_feature
 import matplotlib.pyplot as plt
 import glob
 # from utils.graphics_utils import BasicPointCloud
@@ -177,40 +176,9 @@ def feature_to_rgb(features):
     return rgb_array
 
 
-def feature_visualize_saving(feature):
-    fmap = feature[None, :, :, :] # torch.Size([1, 512, h, w])
-    fmap = nn.functional.normalize(fmap, dim=1) # channel维度上做归一化
-    pca = sklearn.decomposition.PCA(3, random_state=42) # PCA降维到3维
-    f_samples = fmap.permute(0, 2, 3, 1).reshape(-1, fmap.shape[1])[::3].cpu().numpy() # 1, h, w, 512 -> h*w/3, 512
-    transformed = pca.fit_transform(f_samples)
-    feature_pca_mean = torch.tensor(f_samples.mean(0)).float().cuda()
-    feature_pca_components = torch.tensor(pca.components_).float().cuda()
-    q1, q99 = np.percentile(transformed, [1, 99])
-    feature_pca_postprocess_sub = q1
-    feature_pca_postprocess_div = (q99 - q1)
-    del f_samples
-    vis_feature = (fmap.permute(0, 2, 3, 1).reshape(-1, fmap.shape[1]) - feature_pca_mean[None, :]) @ feature_pca_components.T
-    vis_feature = (vis_feature - feature_pca_postprocess_sub) / feature_pca_postprocess_div
-    vis_feature = vis_feature.clamp(0.0, 1.0).float().reshape((fmap.shape[2], fmap.shape[3], 3)).cpu() # h, w, 3
-    return vis_feature
 
-def scale_visualize_saving(scale_map):
-    max_scale=torch.argmax(scale_map,dim=0) # 0,1,2
-    max_scale=max_scale/2
-    return max_scale
 
-def process_scale_map(scale_map):
-    scale_maps = [torch.zeros_like(scale_map).cuda() for _ in range(3)]
-    for i, sm in enumerate(scale_maps):
-        sm[i] = 1
-    return scale_maps
 
-def process_feature_map(view, scale_map):
-    gt_feature_maps = []
-    for sm in process_scale_map(scale_map):
-        gt_feature_map, mask = read_sam_clip_feature(view.img_embed.cuda(), view.seg_map.cuda(), sm.cuda(), max_mode=True)
-        gt_feature_maps.append(gt_feature_map * mask)
-    return gt_feature_maps
 
 def load_ply(path):
     plydata = PlyData.read(path)
@@ -407,7 +375,7 @@ if __name__ == "__main__":
     parser.add_argument("--feature_npy", action='store_true', help='store 16-dim feature map in npy')
     parser.add_argument("--render_mode", default="RGB", type=str) # RGB+ED
     parser.add_argument("--normalize_flag", action="store_true") # RGB+ED
-    args = get_combined_args(parser) #从命令行获取参数，并根据得到的model_path解析该目录下cfg_args文件，获取训练参数
+    args = get_combined_args(parser) #
     print("Rendering " + args.model_path)
 
     assert not (args.feature_mode and args.render_mode == "RGB+ED"), "Feature mode does not support depth rendering"
