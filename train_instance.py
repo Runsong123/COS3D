@@ -187,7 +187,7 @@ def feature_to_rgb(features):
 
 
 
-def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoint_iterations, checkpoint, debug_from, scale_balance_iteration, scale_regulation_iteration, render_novel_view_iteration, novel_view_interval, feature_mode, single_scale, SAM_level, GS_original_path):
+def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoint_iterations, checkpoint, debug_from,  render_novel_view_iteration, novel_view_interval, feature_mode, SAM_level, GS_original_path):
     device0='cuda'
     device1='cpu'
         
@@ -406,8 +406,6 @@ if __name__ == "__main__":
     parser.add_argument("--quiet", action="store_true")
     parser.add_argument("--checkpoint_iterations", nargs="+", type=int, default=[100, 6000, 15_000, 30_000])
     parser.add_argument("--start_checkpoint", type=str, default = None)
-    parser.add_argument('--scale_balance_iteration', type=int, default=1)
-    parser.add_argument('--scale_regulation_iteration', type=int, default=15001)
     parser.add_argument('--render_novel_view_iteration',type=int, default=99999)
     parser.add_argument('--novel_view_interval',type=int,default=150)
     parser.add_argument('--feature_mode', action='store_true', help='use feature replace RGB')
@@ -445,7 +443,6 @@ if __name__ == "__main__":
     torch.autograd.set_detect_anomaly(args.detect_anomaly)
     training(lp.extract(args), op.extract(args), pp.extract(args), 
              args.test_iterations, args.save_iterations, args.checkpoint_iterations, args.start_checkpoint, 
-             args.debug_from, args.scale_balance_iteration, args.scale_regulation_iteration,args.render_novel_view_iteration,args.novel_view_interval,args.feature_mode,args.single_scale, args.SAM_level, GS_original_path)
-
+             args.debug_from, args.render_novel_view_iteration,args.novel_view_interval,args.feature_mode, args.SAM_level, GS_original_path)
     # All done
     print("\nTraining complete.")
