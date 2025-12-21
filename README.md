@@ -55,7 +55,8 @@ Our default, provided install method is based on Conda package and environment m
 conda env create --file environment.yml
 conda activate COS3D
 ```
-Note that you may need to change the PyTorch version according to your CUDA environment if your version is not CUDA 11.3.
+Note that you may need to change the PyTorch version according to your CUDA environment if your version is not CUDA 11.3. (e.g., Torch 2.0.1 + cu118 on an RTX 4090). 
+
 Then, download the checkpoints of SAM from [here](https://github.com/facebookresearch/segment-anything) and place it in the ```ckpts/``` directory.
 
 ## Pre-processing:
