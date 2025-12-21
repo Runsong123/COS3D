@@ -55,6 +55,7 @@ Our default, provided install method is based on Conda package and environment m
 conda env create --file environment.yml
 conda activate COS3D
 ```
+Note that you may need to change the PyTorch version according to your CUDA environment if your version is not CUDA 11.3.
 Then, download the checkpoints of SAM from [here](https://github.com/facebookresearch/segment-anything) and place it in the ```ckpts/``` directory.
 
 ## Pre-processing:
@@ -99,7 +100,7 @@ You can download the LERF dataset from this [**OneDrive**](https://onedrive.live
 
 - [x] Release training code
 - [x] Release evaluation code
-- [ ] Release the preprocessing code to support various 2D foundation models (e.g., SAM2 and Semantic-SAM for segmentation results, and SigLIP for language features).
+- [ ] Release the simplified preprocessing code to support various 2D foundation models (e.g., SAM2 and Semantic-SAM for segmentation results, and SigLIP for language features). Note that the simplified preprocessing code is not necessary to run the code on the benchmarks, so you can simply skip it if you only want to test our method.
 - [ ] Release the applications code  (e.g., novel image-based query).
 
 This repository is still under construction. Please feel free to open issues or submit pull requests. We appreciate all contributions to this project.
